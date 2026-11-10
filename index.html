@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Barcode Camera Test</title>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 20px;
+  background: #f3f5f7;
+}
+button {
+  padding: 14px 22px;
+  margin: 10px;
+  font-size: 17px;
+}
+#reader {
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
+}
+#result {
+  font-size: 20px;
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+</style>
+</head>
+<body>
+
+<h2>Barcode Camera Test</h2>
+<p>Code 128 Scanner</p>
+
+<button onclick="startScanner()">Start Camera</button>
+<button onclick="stopScanner()">Stop Camera</button>
+
+<div id="reader"></div>
+<p id="result">Waiting for barcode...</p>
+
+<script>
+let scanner;
+
+async function startScanner() {
+  try {
+    scanner = new Html5Qrcode("reader");
+    await scanner.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: 300, height: 120 },
+        formatsToSupport: [
+          Html5QrcodeSupportedFormats.CODE_128
+        ]
+      },
+      (decodedText) => {
+        document.getElementById("result").innerText =
+          "Barcode: " + decodedText;
+      },
+      () => {}
+    );
+  } catch (error) {
+    document.getElementById("result").innerText =
+      "Camera Error: " + error;
+  }
+}
+
+async function stopScanner() {
+  if (scanner && scanner.isScanning) {
+    await scanner.stop();
+    scanner.clear();
+  }
+}
+</script>
+
+</body>
+</html>
